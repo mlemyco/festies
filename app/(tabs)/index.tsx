@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import FestivalList from "./components/FestivalList/FestivalList";
-import SearchBar from "./components/SearchBar";
-import { getAllFestivals } from "./services/events";
-import { Festival } from "./types";
+import FestivalList from "../components/FestivalList/FestivalList";
+import SearchBar from "../components/SearchBar";
+import { getAllFestivals } from "../services/events";
+import { Festival } from "../types";
 
 export default function Index() {
     const [festivals, setFestivals] = useState<Festival[]>([]);

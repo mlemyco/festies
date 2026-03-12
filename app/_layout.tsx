@@ -10,7 +10,10 @@ export default function RootLayout() {
                     headerShown: false,
                     contentStyle: { backgroundColor: "#1d1d21" },
                 }}
-            />
+            >
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="festivals/[id]" />
+            </Stack>
         </SafeAreaProvider>
     );
 }
