@@ -1,5 +1,6 @@
 import React from "react";
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet } from "react-native";
+import TextBar from "./TextBar";
 
 const SearchBar = ({
     setSearch,
@@ -7,12 +8,7 @@ const SearchBar = ({
     setSearch: React.Dispatch<React.SetStateAction<string>>;
 }) => {
     return (
-        <View className="bg-neutral-800 rounded-full p-3 m-2">
-            <TextInput
-                placeholder="Search festivals..."
-                onChangeText={setSearch}
-            />
-        </View>
+        <TextBar placeholder="Search festivals..." onChangeText={setSearch} />
     );
 };
 

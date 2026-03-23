@@ -1,8 +1,8 @@
 import axios from "axios";
 import festivalsData from "../data/festivals.json";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
-const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
+const API_URL = process.env.EXPO_PUBLIC_EDMTRAIN_API_URL;
+const API_KEY = process.env.EXPO_PUBLIC_EDMTRAIN_API_KEY;
 
 const USE_CACHE = true;
 

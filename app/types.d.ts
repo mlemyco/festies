@@ -30,6 +30,12 @@ interface Artist {
     b2bInd: boolean;
 }
 
+interface DisplayArtist {
+    id: number; // id of first artist in sequence if B2B
+    name: string;
+    preference: number;
+}
+
 interface Festival {
     id: number;
     link: string;
@@ -47,4 +53,13 @@ interface Festival {
     artistList: Artist[];
 }
 
-export type { Artist, Festival, Venue };
+interface DisplayFestival {
+    id: number;
+    name: string;
+    startDate: Date;
+    endDate: Date;
+    dateRange: string;
+    venue: Venue;
+}
+
+export type { Artist, DisplayArtist, DisplayFestival, Festival, Venue };

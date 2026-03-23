@@ -1,7 +1,19 @@
-import React, { useState } from "react";
+import { useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { getCurrentUser } from "../services/auth";
+import { updatePreference } from "../services/preferences";
+import { DisplayArtist } from "../types";
 
-const SelectArtistCard = ({ artistName }: { artistName: string }) => {
+const SelectArtistCard = ({
+    festivalId,
+    displayArtist: artist,
+}: {
+    festivalId: number;
+    displayArtist: DisplayArtist;
+}) => {
+    const { id: eventId } = useLocalSearchParams();
+
     // const preferences = ["none", "liked", "loved"];
 
     const [prefIdx, setPrefIdx] = useState<number>(0);
@@ -9,16 +21,31 @@ const SelectArtistCard = ({ artistName }: { artistName: string }) => {
     const [liked, setLiked] = useState<boolean>(false);
     const [loved, setLoved] = useState<boolean>(false);
 
-    const togglePreference = () => {
+    const setPrefLevel = (prefLevel: number) => {
+        setLiked(prefLevel === 1);
+        setLoved(prefLevel === 2);
+    };
+
+    const togglePreference = async () => {
+        const user = await getCurrentUser();
+
         setPrefIdx((prevPref) => {
             const newPref = (prevPref + 1) % 3;
 
-            setLiked(newPref === 1);
-            setLoved(newPref === 2);
+            setPrefLevel(newPref);
+
+            if (user) {
+                updatePreference(festivalId, artist.id, newPref);
+            }
 
             return newPref;
         });
     };
+
+    useEffect(() => {
+        if (artist.preference > 0) console.log(artist.name, artist.preference);
+        setPrefLevel(artist.preference);
+    }, [artist]);
 
     return (
         <Pressable
@@ -32,7 +59,7 @@ const SelectArtistCard = ({ artistName }: { artistName: string }) => {
         >
             <View>
                 <Text className={`text-white ${loved && "font-bold"}`}>
-                    {artistName}
+                    {artist.name}
                 </Text>
             </View>
         </Pressable>

@@ -1,34 +1,80 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet } from "react-native";
 import SelectArtistCard from "../components/SelectArtistCard";
-import { Artist } from "../types";
+import { getPreferencesForEvent } from "../services/preferences";
+import { DisplayArtist, Festival } from "../types";
 
-const ArtistList = ({
-    artistList: initialArtistList,
-}: {
-    artistList: Artist[];
-}) => {
-    let artistNameList: string[] = [];
+interface ArtistPreference {
+    edmtrain_artist_id: number;
+    preference: number;
+}
 
-    let workingArtist = [];
-    for (const currArtist of initialArtistList) {
-        workingArtist.push(currArtist.name);
+const ArtistList = ({ festivalDay }: { festivalDay: Festival }) => {
+    const [preferences, setPreferences] = useState<ArtistPreference[]>([]);
+    const [displayArtists, setDisplayArtists] = useState<DisplayArtist[]>([]);
 
-        if (currArtist.b2bInd) continue;
+    const loadPreferences = async () => {
+        const loadedPrefs = await getPreferencesForEvent(festivalDay.id);
 
-        artistNameList.push(workingArtist.join(" B2B "));
-        workingArtist = [];
-    }
+        if (loadedPrefs) {
+            setPreferences(loadedPrefs);
+        }
+    };
 
-    // Sort case-insensitive
-    artistNameList.sort((a, b) =>
-        a.localeCompare(b, "en", { sensitivity: "base" }),
-    );
+    const getDisplayArtists = () => {
+        let displayArtistList: DisplayArtist[] = [];
+
+        let workingDisplayArtist: DisplayArtist[] = [];
+        for (const currArtist of festivalDay.artistList) {
+            workingDisplayArtist.push({
+                id: currArtist.id,
+                name: currArtist.name,
+                preference:
+                    preferences.find(
+                        (artistPref) =>
+                            artistPref.edmtrain_artist_id === currArtist.id,
+                    )?.preference || 0,
+            });
+
+            if (currArtist.b2bInd) continue;
+
+            displayArtistList.push({
+                id: workingDisplayArtist[0].id,
+                name: workingDisplayArtist
+                    .map((artist) => artist.name)
+                    .join(" B2B "),
+                preference: workingDisplayArtist[0].preference,
+            });
+
+            workingDisplayArtist = [];
+        }
+
+        // Sort case-insensitive
+        displayArtistList.sort((a, b) =>
+            a.name.localeCompare(b.name, "en", { sensitivity: "base" }),
+        );
+
+        setDisplayArtists(displayArtistList);
+        // console.log("displayartists:", displayArtistList);
+    };
+
+    useEffect(() => {
+        loadPreferences();
+    }, [festivalDay]);
+
+    useEffect(() => {
+        getDisplayArtists();
+    }, [preferences]);
 
     return (
         <FlatList
-            data={artistNameList}
-            renderItem={({ item }) => <SelectArtistCard artistName={item} />}
+            data={displayArtists}
+            renderItem={({ item }) => (
+                <SelectArtistCard
+                    festivalId={festivalDay.id}
+                    displayArtist={item}
+                />
+            )}
             keyExtractor={(_, idx) => idx.toString()}
             numColumns={3}
             columnWrapperStyle={{
